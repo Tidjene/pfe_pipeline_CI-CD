@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: check-file-modified
+spec:
+  params:
+    - name: commits
+      type: string
+      description: commits poussés dans la branche
+    - name: filename
+      type: string
+      description: nom du fichier dont on veut vérifier s'il a été modifié ou non
+  results:
+    - name: is_file_changed
+      description: Le résultat suivant renverra oui si y'a changement ou non
+  steps:
+    - name: build-sources
+      image: registry.access.redhat.com/ubi8/ubi-minimal:8.2
+      #script de surveillance de mofification 
+      script: |
+        #!/usr/libexec/platform-python
+        import sys
+        import json
+        commits = json.loads("""$(params.commits)""")
+        contains = False
+        for commit in commits:
+          modifiedFiles = commit["modified"]
+          if "$(params.filename)" in modifiedFiles:
+            contains = True
+            break
+        if contains == True:
+          with open("$(results.is_file_changed.path)", "w") as file_changed:
+            file_changed.write("yes")
+        else:
+          with open("$(results.is_file_changed.path)", "w") as file_changed:
+            file_changed.write("no")

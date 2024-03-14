@@ -1,0 +1,63 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-cicd
+spec:
+  params:
+    - name: commits
+      description: commits poussés dans la branche
+      type: string
+
+    - name: filename
+      type: string
+      description: nom de fichier que nous devons vérifier
+
+    - name: urlToCurl
+      type: string
+      description: L'URL que nous voulons boucler
+
+    - name: options
+      type: array
+      description: Les options supplémentaires qui doivent être fournies au moment de faire une demande curl.
+    - name: repo-url
+      type: string
+      description: L'URL du depot
+
+     
+      
+  tasks:
+    - name: check-file-modified
+      taskRef:
+        name: check-file-modified
+      params:
+        - name: commits
+          value: $(params.commits)
+        - name: filename
+          value: $(params.filename)
+
+    - name: trigger-api
+      runAfter:
+        - "check-file-modified"
+      taskRef:
+        name: curl
+      when:
+        - input: "$(tasks.check-file-modified.results.is_file_changed)"
+          operator: in
+          values: ["yes"]
+      params:
+        - name: url
+          value: "$(params.urlToCurl)"
+        - name: options
+          value:
+            - "$(params.options)"
+
+    - name: recuperer-source
+      runAfter:
+        - "trigger-api"
+      taskRef: 
+        name: git-clone
+     
+      params:
+      - name: url
+        value: $(params.repo-url)
+  
