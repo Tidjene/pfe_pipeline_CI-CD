@@ -1,0 +1,25 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: clone-git-repo
+spec:
+  description: |
+  params:
+  - name: repo-url
+    type: string
+    description: url du depot
+  workspaces:
+  - name: shared-data
+    description: | 
+      Cet espace de travail contient les fichiers du dépôt clonés, afin qu'ils puissent être lus par le
+      prochaine tâche
+  tasks:
+  - name: recuperer-source
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)

@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: clone-repo-git-run-
+spec:
+  pipelineRef:
+    name: clone-git-repo
+   # excuter la tache en mode non root en utilisant le UID ( documentation de la tache git-clone )
+  podTemplate:
+    securityContext:
+      fsGroup: 65532
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate: #PCV ( allocation de partition d'1Gi
+      spec:
+        accessModes:
+        - ReadWriteOnce # lecture et ecriture par un seul pod a la fois
+        resources:
+          requests:
+            storage: 1Gi
+  params:
+  - name: repo-url
+    value: https://github.com/Tidjene/myrepo.git
