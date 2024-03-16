@@ -11,13 +11,18 @@ spec:
       fsGroup: 65532
   workspaces:
   - name: shared-data
-    volumeClaimTemplate: #PCV ( allocation de partition d'1Gi
+    volumeClaimTemplate: #PCV ( allocation de partition d'1Gi )
       spec:
         accessModes:
         - ReadWriteOnce # lecture et ecriture par un seul pod a la fois
         resources:
           requests:
             storage: 1Gi
+  - name: credentials-for-docker
+    secret:
+      secretName: credentials-for-docker
   params:
   - name: repo-url
     value: https://github.com/Tidjene/myrepo.git
+  - name: image-registry
+    value: # la registry dans laquelle sera stockée l'image

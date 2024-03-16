@@ -22,6 +22,11 @@ spec:
     - name: repo-url
       type: string
       description: L'URL du depot
+    - name: image-registry
+      type: string
+  workspaces:
+  - name: shared-data
+  - name: credentials-for-docker
 
      
       
@@ -60,4 +65,16 @@ spec:
       params:
       - name: url
         value: $(params.repo-url)
+    - name: build-and-push #builder l'image et le pousser vers une registry en fournissant les infos d'identification
+      runAfter: ["recuperer-source"]
+      taskRef:
+       name: kaniko
+      workspaces:
+    - name: src
+      workspace: shared-data
+    - name: docker-config
+      workspace: credentials-for-docker
+      params:
+    - name: image
+      value: $(params.image-registry)
   
