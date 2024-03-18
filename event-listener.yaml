@@ -1,11 +1,11 @@
 apiVersion: triggers.tekton.dev/v1beta1
-kind: EventListener
+kind: EventListener #ressource Tekton permettant de surveiller des événements et de déclencher des tâches 
 metadata:
   name: eventlistener
 spec:
-  serviceAccountName: tekton-ci-listener
+  serviceAccountName: tekton-cicd-listener # Le compte de service est utilisé pour déterminer les autorisations que l'EventListener aura lorsqu'il s'exécute.
   triggers:
-    - triggerRef: github-listener
+    - triggerRef: github-listener #Cela signifie que cet EventListener sera déclenché par les événements provenant du déclencheur "github-listener"
   resources:
     kubernetesResource:
       serviceType: NodePort
