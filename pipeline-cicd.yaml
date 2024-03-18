@@ -65,6 +65,7 @@ spec:
       params:
       - name: url
         value: $(params.repo-url)
+        
     - name: build-and-push #builder l'image et le pousser vers une registry en fournissant les infos d'identification
       runAfter: ["recuperer-source"]
       taskRef:
