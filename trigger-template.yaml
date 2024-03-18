@@ -3,30 +3,30 @@ kind: TriggerTemplate
 metadata:
   name: trigger-template
   annotations:
-    triggers.tekton.dev/old-escape-quotes: "true"
+    triggers.tekton.dev/old-escape-quotes: "true" # les anciens guillemets doivent être échappés
 spec:
   params:
     - name: commits
       description: Les commits qui ont été poussés
     - name: gitRepository
       description: Le dépôt git
-  resourcetemplates:
+  resourcetemplates:  # les ressources à créer en utilisant ce TriggerTemplate
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
         generateName: config-refresh-run-
         annotations:
-          tekton.dev/gitURL: "$(tt.params.gitRepository)"
+          tekton.dev/gitURL: "$(tt.params.gitRepository)"  # égale à la valeur du paramètre "gitRepository"
       spec:
         pipelineRef:
-          name: config-refresh-pipeline
+          name: config-refresh-pipeline # pipeline de reference
         params:
           - name: commits
             value: "$(tt.params.commits)"
           - name: filename
-            value: "config.yaml"
+            value: # "config.yaml"
           - name: urlToCurl
             value: https://api.hub.tekton.dev/categories
           - name: options
             value:
-              ["-i", "-k", "-X", "GET"] #inclure les entetes,autoriser certificat non valide, et le methode GET
+              ["-i", "-k", "-X", "GET"] #inclure les entetes,autoriser certificat non valide, et la methode GET
