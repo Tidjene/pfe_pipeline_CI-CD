@@ -3,7 +3,7 @@ kind: EventListener #ressource Tekton permettant de surveiller des événements 
 metadata:
   name: eventlistener
 spec:
-  serviceAccountName: tekton-cicd-listener # Le compte de service est utilisé pour déterminer les autorisations que l'EventListener aura lorsqu'il s'exécute.
+  serviceAccountName: service-account # Le compte de service est utilisé pour déterminer les autorisations que l'EventListener aura lorsqu'il s'exécute.
   triggers:
     - triggerRef: github-listener #Cela signifie que cet EventListener sera déclenché par les événements provenant du déclencheur "github-listener"
   resources:
