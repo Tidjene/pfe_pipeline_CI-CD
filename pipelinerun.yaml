@@ -4,7 +4,7 @@ metadata:
   generateName: clone-repo-git-run-
 spec:
   pipelineRef:
-    name: clone-git-repo
+    name: pipeline-cicd
    # excuter la tache en mode non root en utilisant le UID ( documentation de la tache git-clone )
   podTemplate:
     securityContext:
