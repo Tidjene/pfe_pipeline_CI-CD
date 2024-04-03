@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1beta1                                                    # Version de l'API Tekton utilisée
+kind: Pipeline                                                                    # Type d'objet : Pipeline
+metadata:
+  name: clone-build-push                                                          # Nom du pipeline
+spec:
+  description: |                                                                  # Description du pipeline
+    Cet espace de travail contient les fichiers du dépôt clonés, afin qu'ils puissent être lus par le
+    prochaine tâche
+  params:                                                                         # Paramètres du pipeline
+    - name: repo-url                                                              # Nom du paramètre : URL du dépôt
+      type: string                                                                # Type du paramètre : chaîne de caractères
+    - name: image-reference                                                       # Nom du paramètre : Référence de l'image
+      type: string                                                                # Type du paramètre : chaîne de caractères
+  workspaces:                                                                     # Espaces de travail utilisés par le pipeline
+    - name: shared-data                                                           # Nom de l'espace de travail partagé
+    - name: docker-credentials                                                    # Nom de l'espace de travail pour les informations d'identification Docker
+  tasks:                                                                          # Tâches à exécuter dans le pipeline
+    - name: clonage-du-depot                                                      # Nom de la première tâche : Clonage du dépôt
+      taskRef:
+        name: git-clone                                                           # Référence à la tâche de clonage Git
+      workspaces:
+        - name: output                                                            # Nom de l'espace de travail de sortie de la tâche
+          workspace: shared-data                                                  # Espace de travail partagé utilisé
+      params:                                                                     # Paramètres de la tâche
+        - name: url                                                               # Nom du paramètre : URL
+          value: $(params.repo-url)                                               # Valeur du paramètre : URL du dépôt (passée en paramètre)
+    - name: build-and-push                                                        # Nom de la deuxième tâche : Construction et envoi
+      runAfter: ["clonage-du-depot"]                                              # Exécute la tâche après "clonage-du-depot"
+      taskRef:
+        name: kaniko                                                              # Référence à la tâche Kaniko
+      workspaces:
+        - name: source                                                            # Nom de l'espace de travail pour la source
+          workspace: shared-data                                                  # Espace de travail partagé utilisé
+        - name: dockerconfig                                                      # Nom de l'espace de travail pour la configuration Docker
+          workspace: docker-credentials                                           # Espace de travail pour les informations d'identification Docker
+      params:                                                                     # Paramètres de la tâche
+        - name: IMAGE                                                             # Nom du paramètre : IMAGE
+          value: $(params.image-reference)                                        # Valeur du paramètre : Référence de l'image (passée en paramètre)
