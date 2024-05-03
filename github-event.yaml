@@ -58,10 +58,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1                      # Version de l'API Tekton pour la ressource
       kind: PipelineRun                                   # Type de la ressource : Exécution de pipeline
       metadata:
-        generateName: clone-build-push-run-               # Préfixe pour les noms générés des exécutions de pipeline
+        generateName: our-pipeline-ci-cd-run-               # Préfixe pour les noms générés des exécutions de pipeline
       spec:
         pipelineRef:                                      # Référence au pipeline à exécuter
-          name: clone-build-push                          # Nom du pipeline
+          name: our-pipeline-ci-cd                          # Nom du pipeline
         podTemplate:                                      # Modèle de pod pour l'exécution du pipeline
           securityContext:                                # Contexte de sécurité du pod
             fsGroup: 65532                                # GID du groupe pour les volumes montés
@@ -78,7 +78,11 @@ spec:
             secret:                                       # Spécification d'un secret Kubernetes
               secretName: docker-credentials              # Nom du secret contenant les informations d'identification Docker
         params:                                           # Paramètres à fournir au pipeline
-          - name: repo-url                                # Nom du paramètre pour l'URL du dépôt
-            value: $(tt.params.gitrepositoryurl)          # Valeur de l'URL du dépôt Git
-          - name: image-reference                         # Nom du paramètre pour la référence d'image
-            value: tidix/public:frontend                  # Valeur de la référence d'image
+          - name: repo-url                                                           # Nom du paramètre pour l'URL du dépôt
+            value: https://github.com/KhouloudBrn/pipeline-DevSecOps.git                             # Valeur de l'URL du dépôt
+          - name: image-reference-front                                                   # Nom du paramètre pour la référence d'image
+            value: tidix/public:image-frontend                                            # Valeur de la référence d'image
+          - name: image-reference-api                                                  # Nom du paramètre pour la référence d'image
+            value: tidix/public:image-api
+          - name: image-reference-back                                                 # Nom du paramètre pour la référence d'image
+            value: tidix/public:image-backend
